@@ -115,4 +115,5 @@ grunt.initConfig({
 ```
 
 ## Release History
+* 2014/05/04 - v0.1.5 - Changing symlink method to not use full path.
 * 2014/05/04 - v0.1.0 - Initial release.
