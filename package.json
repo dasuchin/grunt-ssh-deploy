@@ -1,0 +1,47 @@
+{
+  "name": "grunt-ssh-deploy",
+  "description": "Grunt SSH deployment",
+  "version": "0.1.0",
+  "homepage": "https://github.com/dcarlson/grunt-ssh-deploy",
+  "author": {
+    "name": "Dustin Carlson",
+    "email": "dustin@dustincarlson.org",
+    "url": "http://dustincarlson.org"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dcarlson/grunt-ssh-deploy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dcarlson/grunt-ssh-deploy/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/dcarlson/grunt-ssh-deploy/blob/master/LICENSE-MIT"
+    }
+  ],
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "devDependencies": {
+    "grunt-contrib-jshint": "^0.9.2",
+    "grunt-contrib-clean": "^0.5.0",
+    "grunt-contrib-nodeunit": "^0.3.3",
+    "grunt": "~0.4.4"
+  },
+  "peerDependencies": {
+    "grunt": "~0.4.4"
+  },
+  "keywords": [
+    "gruntplugin"
+  ],
+  "dependencies": {
+    "async": "^0.8.0",
+    "moment": "^2.6.0",
+    "ssh2": "^0.2.22"
+  }
+}
