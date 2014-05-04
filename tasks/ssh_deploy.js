@@ -40,10 +40,12 @@ module.exports = function(grunt) {
 		c.on('error', function(err) {
 			grunt.log.subhead("Error :: " + options.host);
 			grunt.log.errorlns(err);
-			if (err) {throw err; connection.end(); return false;}
+			if (err) {throw err;}
 		});
 		c.on('close', function(had_error) {
 			grunt.log.subhead("Closed :: " + options.host);
+
+			return false;
 		});
 		c.connect(options);
 
@@ -122,6 +124,8 @@ module.exports = function(grunt) {
 			// closing connection to remote server
 			var closeConnection = function(callback) {
 				connection.end();
+
+				return false;
 			};
 
 			async.series([
