@@ -45,7 +45,7 @@ module.exports = function(grunt) {
 		c.on('close', function(had_error) {
 			grunt.log.subhead("Closed :: " + options.host);
 
-			return false;
+			return true;
 		});
 		c.connect(options);
 
@@ -84,7 +84,7 @@ module.exports = function(grunt) {
 					stream.on('end', function() {
 						grunt.log.debug('REMOTE: ' + cmd);
 						if(!err) {
-							next && next()
+							next();
 						}
 					});
 				});
@@ -119,13 +119,13 @@ module.exports = function(grunt) {
 				grunt.log.subhead('--------------- DELETING RELEASE');
 				grunt.log.subhead('--- ' + command);
 				execRemote(command, options.debug, callback);
-			}
+			};
 
 			// closing connection to remote server
 			var closeConnection = function(callback) {
 				connection.end();
 
-				return false;
+				return true;
 			};
 
 			async.series([
