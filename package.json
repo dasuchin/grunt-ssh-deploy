@@ -37,7 +37,10 @@
     "grunt": "~0.4.4"
   },
   "keywords": [
-    "gruntplugin"
+    "gruntplugin",
+    "ssh",
+    "deploy",
+    "releases"
   ],
   "dependencies": {
     "async": "^0.8.0",
