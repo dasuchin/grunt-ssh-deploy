@@ -97,7 +97,7 @@ module.exports = function(grunt) {
 
 			var scpBuild = function(callback) {
 				var remote_string = options.username + '@' + options.host + ':' + options.deploy_path + '/releases/' + timestamp + '/';
-				var command = 'scp -p ' + options.port + ' -r ' + options.local_path + '/. ' + remote_string;
+				var command = 'scp -P ' + options.port + ' -r ' + options.local_path + '/. ' + remote_string;
 				grunt.log.subhead('--------------- UPLOADING NEW BUILD');
 				grunt.log.subhead('--- ' + command);
 				execLocal(command, callback);
