@@ -32,44 +32,51 @@ grunt.initConfig({
 });
 ```
 
+This plugin will connect to your remote host, add a directory to releases/ in your `remote_path`, and create a symlink to the latest release.
+
+The symlink by default is `current`, you can change this by setting `current_symlink`. 
+
+### Usage
+By setting an environment, you can deploy each specific one with `grunt deploy:environment`.
+
 ### Options
 
 #### options.host
 Type: `String`
 
-Remote host to connect to
+Remote host to connect to.
 
 #### options.username
 Type: `String`
 
-The username to connect as on the remote server
+The username to connect as on the remote server.
 
 #### options.password
 Type: `String`
 
-Password for the username on the remote server
+Password for the username on the remote server.
 
 #### options.port
 Type: `String`
 Default value: `'22'`
 
-Port to connect to on the remote server
+Port to connect to on the remote server.
 
 #### options.deploy_path
 Type: `String`
 
-Full path on the remote server where files will be deployed
+Full path on the remote server where files will be deployed. No trailing slash needed.
 
 #### options.local_path
 Type: `String`
 
-Path on your local for the files you want to be deployed to the remote server
+Path on your local for the files you want to be deployed to the remote server. No trailing slash needed.
 
 #### options.current_symlink
 Type: `String`
 Default value: `'current'`
 
-Password for the username on the remote server
+Password for the username on the remote server.
 
 ### Usage Examples
 
