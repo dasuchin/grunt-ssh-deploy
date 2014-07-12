@@ -10,12 +10,10 @@
 
 module.exports = function(grunt) {
 
-	grunt.registerTask('ssh_deploy', 'Begin Deployment', function() {
+	grunt.registerTask('ssh_rollback', 'Begin Rollback', function() {
 		this.async();
         var Connection = require('ssh2');
-        var moment = require('moment');
-        var timestamp = moment().format('YYYYMMDDHHmmssSSS');
-        var async = require('async');
+        var async = require('async');        
 
         var options = grunt.config.get('environments')[this.args]['options'];
 
@@ -41,33 +39,13 @@ module.exports = function(grunt) {
 		c.connect(options);
 
 		var execCommands = function(options, connection){
-            var childProcessExec = require('child_process').exec;
-
-            var execLocal = function(cmd, next) {
-                var nextFun = next;
-                childProcessExec(cmd, function(err, stdout, stderr){
-                    grunt.log.debug(cmd); 
-                    grunt.log.debug('stdout: ' + stdout);
-                    grunt.log.debug('stderr: ' + stderr);
-                    if (err !== null) {
-                        grunt.log.errorlns('exec error: ' + err);
-                        grunt.log.subhead('Error deploying. Closing connection.');
-
-                        deleteRelease(closeConnection);
-                    } else {
-                        next();
-                    }
-                });
-            };
 
             // executes a remote command via ssh
             var execRemote = function(cmd, showLog, next){
                 connection.exec(cmd, function(err, stream) {
                     if (err) {
                         grunt.log.errorlns(err);
-                        grunt.log.subhead('ERROR DEPLOYING. CLOSING CONNECTION AND DELETING RELEASE.');
-
-                        deleteRelease(closeConnection);
+                        grunt.log.subhead('ERROR ROLLING BACK. CLOSING CONNECTION.');
                     }
                     stream.on('data', function(data, extended) {
                         grunt.log.debug((extended === 'stderr' ? 'STDERR: ' : 'STDOUT: ') + data);
@@ -81,24 +59,9 @@ module.exports = function(grunt) {
                 });
             };
 
-            var createReleases = function(callback) {
-                var command = 'cd ' + options.deploy_path + '/releases && mkdir ' + timestamp;
-                grunt.log.subhead('--------------- CREATING NEW RELEASE');
-                grunt.log.subhead('--- ' + command);
-                execRemote(command, options.debug, callback);
-            };
-
-            var scpBuild = function(callback) {
-                var remote_string = options.username + '@' + options.host + ':' + options.deploy_path + '/releases/' + timestamp + '/';
-                var command = 'scp -P ' + options.port + ' -r ' + options.local_path + '/. ' + remote_string;
-                grunt.log.subhead('--------------- UPLOADING NEW BUILD');
-                grunt.log.subhead('--- ' + command);
-                execLocal(command, callback);
-            };
-
             var updateSymlink = function(callback) {
                 var delete_symlink = 'rm -rf ' + options.deploy_path + '/' + options.current_symlink;
-                var set_symlink = 'cd ' + options.deploy_path + ' && ln -s releases/' + timestamp + ' ' + options.current_symlink;
+                var set_symlink = 'cd ' + options.deploy_path + ' && t=`ls -t1 releases/ | sed -n 2p` && ln -s releases/$t ' + options.current_symlink;
                 var command = delete_symlink + ' && ' + set_symlink;
                 grunt.log.subhead('--------------- UPDATING SYM LINK');
                 grunt.log.subhead('--- ' + command);
@@ -106,7 +69,7 @@ module.exports = function(grunt) {
             };
 
             var deleteRelease = function(callback) {
-                var command = 'rm -rf ' + options.deploy_path + '/releases/' + timestamp + '/';
+                var command = 't=`ls -t1 ' + options.deploy_path + '/releases/ | sed -n 1p` && rm -rf ' + options.deploy_path + '/releases/$t/';
                 grunt.log.subhead('--------------- DELETING RELEASE');
                 grunt.log.subhead('--- ' + command);
                 execRemote(command, options.debug, callback);
@@ -120,9 +83,8 @@ module.exports = function(grunt) {
             };
     
             async.series([
-                createReleases,
-                scpBuild,
                 updateSymlink,
+                deleteRelease,
                 closeConnection
             ]);
         };
