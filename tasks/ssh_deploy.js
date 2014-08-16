@@ -83,6 +83,15 @@ module.exports = function(grunt) {
                 });
             };
 
+            var runBefore = function(callback) {
+                if (options.run_before) {
+                    var command = options.run_before;
+                    grunt.log.subhead('--------------- PREPEARE ');
+                    grunt.log.subhead('--- ' + command);
+                    execRemote(command, options.debug, callback);
+                }
+            };
+
             var createReleases = function(callback) {
                 var command = 'mkdir -p ' + options.deploy_path + '/releases && cd ' + options.deploy_path + '/releases && mkdir ' + timestamp;
                 grunt.log.subhead('--------------- CREATING NEW RELEASE');
@@ -107,6 +116,15 @@ module.exports = function(grunt) {
                 execRemote(command, options.debug, callback);
             };
 
+            var runAfter = function(callback) {
+                if (options.run_after) {
+                    var command = options.run_before;
+                    grunt.log.subhead('--------------- PREPEARE SYSTEM FOR RELEASE ');
+                    grunt.log.subhead('--- ' + command);
+                    execRemote(command, options.debug, callback);
+                }
+            };
+
             var deleteRelease = function(callback) {
                 var command = 'rm -rf ' + options.deploy_path + '/releases/' + timestamp + '/';
                 grunt.log.subhead('--------------- DELETING RELEASE');
@@ -122,9 +140,11 @@ module.exports = function(grunt) {
             };
     
             async.series([
+                runBefore,
                 createReleases,
                 scpBuild,
                 updateSymlink,
+                runAfter,
                 closeConnection
             ]);
         };
