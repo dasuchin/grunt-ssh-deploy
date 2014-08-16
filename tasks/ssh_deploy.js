@@ -16,6 +16,7 @@ module.exports = function(grunt) {
         var moment = require('moment');
         var timestamp = moment().format('YYYYMMDDHHmmssSSS');
         var async = require('async');
+        var done = this.async();
 
         var options = grunt.config.get('environments')[this.args]['options'];
 
@@ -35,6 +36,7 @@ module.exports = function(grunt) {
 		});
 		c.on('close', function(had_error) {
 			grunt.log.subhead("Closed :: " + options.host);
+            done();
 
 			return true;
 		});
