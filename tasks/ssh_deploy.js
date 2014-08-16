@@ -84,7 +84,7 @@ module.exports = function(grunt) {
             };
 
             var createReleases = function(callback) {
-                var command = 'cd ' + options.deploy_path + '/releases && mkdir ' + timestamp;
+                var command = 'mkdir -p ' + options.deploy_path + '/releases && cd ' + options.deploy_path + '/releases && mkdir ' + timestamp;
                 grunt.log.subhead('--------------- CREATING NEW RELEASE');
                 grunt.log.subhead('--- ' + command);
                 execRemote(command, options.debug, callback);
