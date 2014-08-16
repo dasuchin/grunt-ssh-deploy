@@ -89,6 +89,8 @@ module.exports = function(grunt) {
                     grunt.log.subhead('--------------- PREPEARE ');
                     grunt.log.subhead('--- ' + command);
                     execRemote(command, options.debug, callback);
+                } else {
+                    callback();
                 }
             };
 
@@ -118,10 +120,12 @@ module.exports = function(grunt) {
 
             var runAfter = function(callback) {
                 if (options.run_after) {
-                    var command = options.run_before;
+                    var command = options.run_after;
                     grunt.log.subhead('--------------- PREPEARE SYSTEM FOR RELEASE ');
                     grunt.log.subhead('--- ' + command);
                     execRemote(command, options.debug, callback);
+                } else {
+                    callback();
                 }
             };
 
