@@ -42,6 +42,10 @@ module.exports = function(grunt) {
 		});
 		c.connect(options);
 
+        var setVariables = function(command) {
+            command.replace('#{current_path}', options.deploy_path + '/' + options.current_symlink);
+        };
+
 		var execCommands = function(options, connection){
             var childProcessExec = require('child_process').exec;
 
@@ -86,6 +90,7 @@ module.exports = function(grunt) {
             var runBefore = function(callback) {
                 if (options.run_before) {
                     var command = options.run_before;
+                    command = setVariables(command);
                     grunt.log.subhead('--------------- PREPEARE ');
                     grunt.log.subhead('--- ' + command);
                     execRemote(command, options.debug, callback);
@@ -121,6 +126,7 @@ module.exports = function(grunt) {
             var runAfter = function(callback) {
                 if (options.run_after) {
                     var command = options.run_after;
+                    command = setVariables(command);
                     grunt.log.subhead('--------------- PREPEARE SYSTEM FOR RELEASE ');
                     grunt.log.subhead('--- ' + command);
                     execRemote(command, options.debug, callback);
