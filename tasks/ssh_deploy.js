@@ -16,6 +16,7 @@ module.exports = function(grunt) {
         var moment = require('moment');
         var timestamp = moment().format('YYYYMMDDHHmmssSSS');
         var async = require('async');
+        var done = this.async();
 
         var options = grunt.config.get('environments')[this.args]['options'];
 
@@ -35,10 +36,16 @@ module.exports = function(grunt) {
 		});
 		c.on('close', function(had_error) {
 			grunt.log.subhead("Closed :: " + options.host);
+            done();
 
 			return true;
 		});
 		c.connect(options);
+
+        var setVariables = function(command) {
+            command = command.replace('#{current_path}', options.deploy_path + '/' + options.current_symlink);
+            return command;
+        };
 
 		var execCommands = function(options, connection){
             var childProcessExec = require('child_process').exec;
@@ -81,8 +88,20 @@ module.exports = function(grunt) {
                 });
             };
 
+            var runBefore = function(callback) {
+                if (options.run_before) {
+                    var command = options.run_before;
+                    command = setVariables(command);
+                    grunt.log.subhead('--------------- PREPEARE ');
+                    grunt.log.subhead('--- ' + command);
+                    execRemote(command, options.debug, callback);
+                } else {
+                    callback();
+                }
+            };
+
             var createReleases = function(callback) {
-                var command = 'cd ' + options.deploy_path + '/releases && mkdir ' + timestamp;
+                var command = 'mkdir -p ' + options.deploy_path + '/releases && cd ' + options.deploy_path + '/releases && mkdir ' + timestamp;
                 grunt.log.subhead('--------------- CREATING NEW RELEASE');
                 grunt.log.subhead('--- ' + command);
                 execRemote(command, options.debug, callback);
@@ -105,6 +124,18 @@ module.exports = function(grunt) {
                 execRemote(command, options.debug, callback);
             };
 
+            var runAfter = function(callback) {
+                if (options.run_after) {
+                    var command = options.run_after;
+                    command = setVariables(command);
+                    grunt.log.subhead('--------------- PREPEARE SYSTEM FOR RELEASE ');
+                    grunt.log.subhead('--- ' + command);
+                    execRemote(command, options.debug, callback);
+                } else {
+                    callback();
+                }
+            };
+
             var deleteRelease = function(callback) {
                 var command = 'rm -rf ' + options.deploy_path + '/releases/' + timestamp + '/';
                 grunt.log.subhead('--------------- DELETING RELEASE');
@@ -120,9 +151,11 @@ module.exports = function(grunt) {
             };
     
             async.series([
+                runBefore,
                 createReleases,
                 scpBuild,
                 updateSymlink,
+                runAfter,
                 closeConnection
             ]);
         };
