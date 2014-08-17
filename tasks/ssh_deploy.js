@@ -43,7 +43,8 @@ module.exports = function(grunt) {
 		c.connect(options);
 
         var setVariables = function(command) {
-            command.replace('#{current_path}', options.deploy_path + '/' + options.current_symlink);
+            command = command.replace('#{current_path}', options.deploy_path + '/' + options.current_symlink);
+            return command;
         };
 
 		var execCommands = function(options, connection){
