@@ -1,4 +1,4 @@
-# grunt-ssh-deploy (Version: 0.2.1)
+# grunt-ssh-deploy (Version: 0.2.2)
 
 > SSH Deployment for Grunt using [ssh2](https://github.com/mscdex/ssh2).
 
@@ -56,6 +56,16 @@ Type: `String`
 
 Password for the username on the remote server.
 
+#### options.privateKey
+Type: `string`
+
+Path to your private key `privateKey: require('fs').readFileSync('/path/to/private/key')`
+
+#### options.agent
+Type: `string`
+
+Set agent `agent: process.env.SSH_AUTH_SOCK`
+
 #### options.port
 Type: `String`
 Default value: `'22'`
@@ -76,7 +86,7 @@ Path on your local for the files you want to be deployed to the remote server. N
 Type: `String`
 Default value: `'current'`
 
-Path to direcotry to symlink with most recent release.
+Path to directory to symlink with most recent release.
 
 #### options.before_deploy, options.after_deploy
 Type: `String`
