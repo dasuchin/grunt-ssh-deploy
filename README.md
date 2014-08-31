@@ -76,7 +76,12 @@ Path on your local for the files you want to be deployed to the remote server. N
 Type: `String`
 Default value: `'current'`
 
-Password for the username on the remote server.
+Path to direcotry to symlink with most recent release.
+
+#### options.before_deploy, options.after_deploy
+Type: `String`
+
+Commands to run on the server before and after deploy directory is created and symlinked. 
 
 ### Usage Examples
 
@@ -111,6 +116,23 @@ grunt.initConfig({
           }
       }
   }
+});
+```
+
+### Before and After Hooks
+```js
+grunt.initConfig({
+  environments: {
+    production: {
+      host: '123.45.67.89',
+      username: 'root',
+      password: 'password',
+      deploy_path: '/sites/great_project',
+      local_path: '.',
+      before_deploy: 'cd /sites/great_project/releases/current && forever stopall',
+      after_deploy: 'cd /sites/great_project/releases/current && npm install && forever start app.js'
+    }
+  },
 });
 ```
 

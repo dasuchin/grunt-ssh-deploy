@@ -10,37 +10,43 @@
 
 module.exports = function(grunt) {
 
-	grunt.registerTask('ssh_deploy', 'Begin Deployment', function() {
-		this.async();
+    grunt.registerTask('ssh_deploy', 'Begin Deployment', function() {
+        this.async();
         var Connection = require('ssh2');
         var moment = require('moment');
         var timestamp = moment().format('YYYYMMDDHHmmssSSS');
         var async = require('async');
+        var extend = require('extend');
 
-        var options = grunt.config.get('environments')[this.args]['options'];
+        var defaults = {
+            current_symlink: 'current',
+            port: 22
+        };
 
-		var c = new Connection();
-		c.on('connect', function() {
-			grunt.log.subhead('Connecting :: ' + options.host);
-		});
-		c.on('ready', function() {
-			grunt.log.subhead('Connected :: ' + options.host);
-			// execution of tasks
-			execCommands(options,c);
-		});
-		c.on('error', function(err) {
-			grunt.log.subhead("Error :: " + options.host);
-			grunt.log.errorlns(err);
-			if (err) {throw err;}
-		});
-		c.on('close', function(had_error) {
-			grunt.log.subhead("Closed :: " + options.host);
+        var options = extend({}, defaults, grunt.config.get('environments')[this.args]['options']);
 
-			return true;
-		});
-		c.connect(options);
+        var c = new Connection();
+        c.on('connect', function() {
+            grunt.log.subhead('Connecting :: ' + options.host);
+        });
+        c.on('ready', function() {
+            grunt.log.subhead('Connected :: ' + options.host);
+            // execution of tasks
+            execCommands(options,c);
+        });
+        c.on('error', function(err) {
+            grunt.log.subhead("Error :: " + options.host);
+            grunt.log.errorlns(err);
+            if (err) {throw err;}
+        });
+        c.on('close', function(had_error) {
+            grunt.log.subhead("Closed :: " + options.host);
 
-		var execCommands = function(options, connection){
+            return true;
+        });
+        c.connect(options);
+
+        var execCommands = function(options, connection){
             var childProcessExec = require('child_process').exec;
 
             var execLocal = function(cmd, next) {
@@ -81,8 +87,21 @@ module.exports = function(grunt) {
                 });
             };
 
+
+
+            var onBeforeDeploy = function(callback){
+                var command = options.before_deploy;
+
+                if(!command){
+                    callback();
+                }
+                grunt.log.subhead("--------------- RUNNING PRE-DEPLOY COMMANDS");
+                grunt.log.subhead('--- ' + command);;
+                execRemote(command, options.debug, callback);
+            };
+
             var createReleases = function(callback) {
-                var command = 'cd ' + options.deploy_path + '/releases && mkdir ' + timestamp;
+                var command = 'cd ' + options.deploy_path + ' && mkdir -p releases/' + timestamp;
                 grunt.log.subhead('--------------- CREATING NEW RELEASE');
                 grunt.log.subhead('--- ' + command);
                 execRemote(command, options.debug, callback);
@@ -112,6 +131,17 @@ module.exports = function(grunt) {
                 execRemote(command, options.debug, callback);
             };
 
+            var onAfterDeploy = function(callback){
+                var command = options.after_deploy;
+                
+                if(!command){
+                    callback();
+                }
+                grunt.log.subhead("--------------- RUNNING POST-DEPLOY COMMANDS");
+                grunt.log.subhead('--- ' + command);
+                execRemote(command, options.debug, callback);
+            };
+
             // closing connection to remote server
             var closeConnection = function(callback) {
                 connection.end();
@@ -120,9 +150,11 @@ module.exports = function(grunt) {
             };
     
             async.series([
+                onBeforeDeploy,
                 createReleases,
                 scpBuild,
                 updateSymlink,
+                onAfterDeploy,
                 closeConnection
             ]);
         };
