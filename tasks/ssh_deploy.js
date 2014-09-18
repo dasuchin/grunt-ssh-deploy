@@ -154,7 +154,7 @@ module.exports = function(grunt) {
                 if (typeof options.after_deploy == "undefined" || !options.after_deploy) {
                     callback();
                 } else {
-                    var command = options.before_deploy;
+                    var command = options.after_deploy;
 
                     grunt.log.subhead("--------------- RUNNING POST-DEPLOY COMMANDS");
                     grunt.log.subhead('--- ' + command);;
