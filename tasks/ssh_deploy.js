@@ -164,7 +164,7 @@ module.exports = function(grunt) {
             var closeConnection = function(callback) {
                 connection.end();
 
-                return true;
+                callback();
             };
 
             async.series([
