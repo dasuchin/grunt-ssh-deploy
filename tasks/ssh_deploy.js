@@ -99,14 +99,15 @@ module.exports = function(grunt) {
 
 
             var onBeforeDeploy = function(callback){
-                var command = options.before_deploy;
-
-                if(!command){
+                if (typeof options.before_deploy == "undefined" || !options.before_deploy) {
                     callback();
+                } else {
+                    var command = options.before_deploy;
+
+                    grunt.log.subhead("--------------- RUNNING PRE-DEPLOY COMMANDS");
+                    grunt.log.subhead('--- ' + command);;
+                    execRemote(command, options.debug, callback);
                 }
-                grunt.log.subhead("--------------- RUNNING PRE-DEPLOY COMMANDS");
-                grunt.log.subhead('--- ' + command);;
-                execRemote(command, options.debug, callback);
             };
 
             var createReleases = function(callback) {
@@ -150,14 +151,15 @@ module.exports = function(grunt) {
             };
 
             var onAfterDeploy = function(callback){
-                var command = options.after_deploy;
-
-                if(!command){
+                if (typeof options.after_deploy == "undefined" || !options.after_deploy) {
                     callback();
+                } else {
+                    var command = options.before_deploy;
+
+                    grunt.log.subhead("--------------- RUNNING POST-DEPLOY COMMANDS");
+                    grunt.log.subhead('--- ' + command);;
+                    execRemote(command, options.debug, callback);
                 }
-                grunt.log.subhead("--------------- RUNNING POST-DEPLOY COMMANDS");
-                grunt.log.subhead('--- ' + command);
-                execRemote(command, options.debug, callback);
             };
 
             // closing connection to remote server
