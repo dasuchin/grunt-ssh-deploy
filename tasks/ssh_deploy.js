@@ -13,6 +13,7 @@ module.exports = function(grunt) {
     grunt.registerTask('ssh_deploy', 'Begin Deployment', function() {
         this.async();
         var Connection = require('ssh2');
+        var client = require('scp2');
         var moment = require('moment');
         var timestamp = moment().format('YYYYMMDDHHmmssSSS');
         var async = require('async');
@@ -24,6 +25,14 @@ module.exports = function(grunt) {
         };
 
         var options = extend({}, defaults, grunt.config.get('environments')[this.args]['options']);
+
+        // scp defaults
+        client.defaults({
+            port: options.port,
+            host: options.host,
+            username: options.username,
+            privateKey: options.privateKey
+        });
 
         var c = new Connection();
         c.on('connect', function() {
@@ -52,7 +61,7 @@ module.exports = function(grunt) {
             var execLocal = function(cmd, next) {
                 var nextFun = next;
                 childProcessExec(cmd, function(err, stdout, stderr){
-                    grunt.log.debug(cmd); 
+                    grunt.log.debug(cmd);
                     grunt.log.debug('stdout: ' + stdout);
                     grunt.log.debug('stderr: ' + stderr);
                     if (err !== null) {
@@ -108,11 +117,20 @@ module.exports = function(grunt) {
             };
 
             var scpBuild = function(callback) {
-                var remote_string = options.username + '@' + options.host + ':' + options.deploy_path + '/releases/' + timestamp + '/';
-                var command = 'scp -P ' + options.port + ' -r ' + options.local_path + '/. ' + remote_string;
                 grunt.log.subhead('--------------- UPLOADING NEW BUILD');
-                grunt.log.subhead('--- ' + command);
-                execLocal(command, callback);
+                grunt.log.debug('SCP FROM LOCAL: ' + options.local_path
+                    + '\n TO REMOTE: ' + options.deploy_path + '/releases/' + timestamp + '/');
+
+                client.scp(options.local_path, {
+                    path: options.deploy_path + '/releases/' + timestamp + '/'
+                }, function (err) {
+                    if (err) {
+                        grunt.log.errorlns(err);
+                    } else {
+                        grunt.log.subhead('--- DONE UPLOADING');
+                        callback();
+                    }
+                });
             };
 
             var updateSymlink = function(callback) {
@@ -133,7 +151,7 @@ module.exports = function(grunt) {
 
             var onAfterDeploy = function(callback){
                 var command = options.after_deploy;
-                
+
                 if(!command){
                     callback();
                 }
@@ -148,7 +166,7 @@ module.exports = function(grunt) {
 
                 return true;
             };
-    
+
             async.series([
                 onBeforeDeploy,
                 createReleases,
