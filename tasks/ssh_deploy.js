@@ -11,7 +11,7 @@
 module.exports = function(grunt) {
 
     grunt.registerTask('ssh_deploy', 'Begin Deployment', function() {
-        this.async();
+        var done = this.async();
         var Connection = require('ssh2');
         var client = require('scp2');
         var moment = require('moment');
@@ -174,7 +174,9 @@ module.exports = function(grunt) {
                 updateSymlink,
                 onAfterDeploy,
                 closeConnection
-            ]);
+            ], function () {
+                done();
+            });
         };
     });
 };
