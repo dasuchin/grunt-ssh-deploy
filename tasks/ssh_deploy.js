@@ -104,9 +104,17 @@ module.exports = function(grunt) {
                 } else {
                     var command = options.before_deploy;
 
-                    grunt.log.subhead("--------------- RUNNING PRE-DEPLOY COMMANDS");
-                    grunt.log.subhead('--- ' + command);;
-                    execRemote(command, options.debug, callback);
+                    if (command instanceof Array) {
+                        async.eachSeries(command, function (command, callback) {
+                            grunt.log.subhead("--------------- RUNNING PRE-DEPLOY COMMANDS");
+                            grunt.log.subhead('--- ' + command);
+                            execRemote(command, options.debug, callback);
+                        }, callback);
+                    } else {
+                        grunt.log.subhead("--------------- RUNNING PRE-DEPLOY COMMANDS");
+                        grunt.log.subhead('--- ' + command);;
+                        execRemote(command, options.debug, callback);
+                    }
                 }
             };
 
@@ -156,9 +164,17 @@ module.exports = function(grunt) {
                 } else {
                     var command = options.after_deploy;
 
-                    grunt.log.subhead("--------------- RUNNING POST-DEPLOY COMMANDS");
-                    grunt.log.subhead('--- ' + command);;
-                    execRemote(command, options.debug, callback);
+                    if (command instanceof Array) {
+                        async.eachSeries(command, function (command, callback) {
+                            grunt.log.subhead("--------------- RUNNING POST-DEPLOY COMMANDS");
+                            grunt.log.subhead('--- ' + command);;
+                            execRemote(command, options.debug, callback);
+                        }, callback);
+                    } else {
+                        grunt.log.subhead("--------------- RUNNING POST-DEPLOY COMMANDS");
+                        grunt.log.subhead('--- ' + command);;
+                        execRemote(command, options.debug, callback);
+                    }
                 }
             };
 
