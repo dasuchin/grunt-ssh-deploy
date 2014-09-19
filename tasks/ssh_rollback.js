@@ -11,7 +11,7 @@
 module.exports = function(grunt) {
 
 	grunt.registerTask('ssh_rollback', 'Begin Rollback', function() {
-		this.async();
+		var done = this.async();
         var Connection = require('ssh2');
         var async = require('async');        
 
@@ -79,14 +79,14 @@ module.exports = function(grunt) {
             var closeConnection = function(callback) {
                 connection.end();
 
-                return true;
+                callback();
             };
     
             async.series([
                 updateSymlink,
                 deleteRelease,
                 closeConnection
-            ]);
+            ], done);
         };
     });
 };
