@@ -24,7 +24,8 @@ module.exports = function(grunt) {
             port: 22
         };
 
-        var options = extend({}, defaults, grunt.config.get('environments')[this.args]['options']);
+        var options = extend({}, defaults, grunt.config.get('environments').options,
+            grunt.config.get('environments')[this.args]['options']);
 
         // scp defaults
         client.defaults({
