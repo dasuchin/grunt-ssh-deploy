@@ -13,7 +13,7 @@ module.exports = function(grunt) {
 	grunt.registerTask('ssh_rollback', 'Begin Rollback', function() {
 		var done = this.async();
         var Connection = require('ssh2');
-        var async = require('async');        
+        var async = require('async');
 
         var options = grunt.config.get('environments')[this.args]['options'];
 
