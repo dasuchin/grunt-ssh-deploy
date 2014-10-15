@@ -8,6 +8,24 @@
 
 'use strict';
 
+/* @throw Error: If privateKey or password field is not found */
+var getScpOptions = function(options) {
+    var scpOptions = {
+        port: options.port,
+        host: options.host,
+        username: options.username
+    };
+
+    if(options.privateKey)
+        scpOptions.privateKey = options.privateKey;
+    else
+        scpOptions.password = options.password;
+
+    if(!(scpOptions.privateKey || scpOptions.password)) throw new Error('Password or private key required.');
+
+    return scpOptions;
+};
+
 module.exports = function(grunt) {
 
     grunt.registerTask('ssh_deploy', 'Begin Deployment', function() {
@@ -28,12 +46,7 @@ module.exports = function(grunt) {
             grunt.config.get('environments')[this.args]['options']);
 
         // scp defaults
-        client.defaults({
-            port: options.port,
-            host: options.host,
-            username: options.username,
-            privateKey: options.privateKey
-        });
+        client.defaults(getScpOptions(options));
 
         var c = new Connection();
         c.on('connect', function() {
