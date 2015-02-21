@@ -204,6 +204,16 @@ module.exports = function(grunt) {
                 }
             };
 
+            var remoteCleanup = function(callback) {
+                if (typeof options.number_of_releases !== 'number') callback();
+                if (options.number_of_releases < 1) options.number_of_releases = 1;
+
+                var command = "rm -rf `ls -t " + options.deploy_path + " | awk 'NR>" + options.number_of_releases + "'`";
+                grunt.log.subhead('--------------- REMOVING OLD BUILDS');
+                grunt.log.subhead('--- ' + command);
+                execRemote(command, options.debug, callback);
+            };
+
             var localCleanup = function(callback) {
                 var command = 'rm deploy.tgz';
                 grunt.log.subhead('--------------- LOCAL CLEANUP');
@@ -226,6 +236,7 @@ module.exports = function(grunt) {
                 unzipOnRemote,
                 updateSymlink,
                 onAfterDeploy,
+                remoteCleanup,
                 localCleanup,
                 closeConnection
             ], function () {
