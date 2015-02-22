@@ -94,7 +94,11 @@ Type: `String`
 Commands to run on the server before and after deploy directory is created and symlinked. 
 
 #### options.releases_to_keep
-Type: `String`
+Type: `Number`
+
+#### options.zip_deploy
+Type: `Boolean`
+Default value: `true`
 
 The number of builds (including the current build) to keep in the remote releases directory. Must be >= 1.
 

@@ -22,7 +22,7 @@ var getScpOptions = function(options) {
         scpOptions.password = options.password;
     }
     else if (options.agent) {
-        //all is good
+        //ssh-agent will be used
     } else {
         throw new Error('Agent, Password or private key required for secure copy.');
     }
@@ -43,7 +43,8 @@ module.exports = function(grunt) {
 
         var defaults = {
             current_symlink: 'current',
-            port: 22
+            port: 22,
+            zip_deploy: true
         };
 
         var options = extend({}, defaults, grunt.config.get('environments').options,
@@ -114,6 +115,7 @@ module.exports = function(grunt) {
             };
 
             var zipForDeploy = function(callback) {
+                if (!options.zip_deploy) callback();
                 var command = "tar -czvf ./deploy.tgz --directory=" + options.local_path + " . --exclude=deploy.tgz";
                 grunt.log.subhead('--------------- ZIPPING FOLDER');
                 grunt.log.subhead('--- ' + command);
@@ -121,20 +123,17 @@ module.exports = function(grunt) {
             };
 
             var onBeforeDeploy = function(callback){
-                if (typeof options.before_deploy == "undefined" || !options.before_deploy) {
-                    callback();
-                } else {
-                    var command = options.before_deploy;
-                    grunt.log.subhead("--------------- RUNNING PRE-DEPLOY COMMANDS");
-                    if (command instanceof Array) {
-                        async.eachSeries(command, function (command, callback) {
-                            grunt.log.subhead('--- ' + command);
-                            execRemote(command, options.debug, callback);
-                        }, callback);
-                    } else {
+                if (typeof options.before_deploy === "undefined") callback();
+                var command = options.before_deploy;
+                grunt.log.subhead("--------------- RUNNING PRE-DEPLOY COMMANDS");
+                if (command instanceof Array) {
+                    async.eachSeries(command, function (command, callback) {
                         grunt.log.subhead('--- ' + command);
                         execRemote(command, options.debug, callback);
-                    }
+                    }, callback);
+                } else {
+                    grunt.log.subhead('--- ' + command);
+                    execRemote(command, options.debug, callback);
                 }
             };
 
@@ -146,10 +145,11 @@ module.exports = function(grunt) {
             };
 
             var scpBuild = function(callback) {
+                var build = (options.zip_deploy) ? 'deploy.tgz' : options.local_path;
                 grunt.log.subhead('--------------- UPLOADING NEW BUILD');
-                grunt.log.debug('SCP FROM LOCAL: deploy.tgz'
+                grunt.log.debug('SCP FROM LOCAL: ' + build
                     + '\n TO REMOTE: ' + options.deploy_path + '/releases/' + timestamp + '/');
-                client.scp('deploy.tgz', {
+                client.scp(build, {
                     path: options.deploy_path + '/releases/' + timestamp + '/'
                 }, function (err) {
                     if (err) {
@@ -160,7 +160,9 @@ module.exports = function(grunt) {
                     }
                 });
             };
+
             var unzipOnRemote = function(callback) {
+                if (!options.zip_deploy) callback();
                 var goToCurrent = "cd " + options.deploy_path + "/releases/" + timestamp;
                 var untar = "tar -xzvf deploy.tgz";
                 var cleanup = "rm " + options.deploy_path + "/releases/" + timestamp + "/deploy.tgz";
@@ -187,20 +189,17 @@ module.exports = function(grunt) {
             };
 
             var onAfterDeploy = function(callback){
-                if (typeof options.after_deploy == "undefined" || !options.after_deploy) {
-                    callback();
-                } else {
-                    var command = options.after_deploy;
-                    grunt.log.subhead("--------------- RUNNING POST-DEPLOY COMMANDS");
-                    if (command instanceof Array) {
-                        async.eachSeries(command, function (command, callback) {
-                            grunt.log.subhead('--- ' + command);
-                            execRemote(command, options.debug, callback);
-                        }, callback);
-                    } else {
+                if (typeof options.after_deploy === "undefined") callback();
+                var command = options.after_deploy;
+                grunt.log.subhead("--------------- RUNNING POST-DEPLOY COMMANDS");
+                if (command instanceof Array) {
+                    async.eachSeries(command, function (command, callback) {
                         grunt.log.subhead('--- ' + command);
                         execRemote(command, options.debug, callback);
-                    }
+                    }, callback);
+                } else {
+                    grunt.log.subhead('--- ' + command);
+                    execRemote(command, options.debug, callback);
                 }
             };
 
@@ -214,7 +213,8 @@ module.exports = function(grunt) {
                 execRemote(command, options.debug, callback);
             };
 
-            var localCleanup = function(callback) {
+            var deleteZip = function(callback) {
+                if (!options.zip_deploy) callback();
                 var command = 'rm deploy.tgz';
                 grunt.log.subhead('--------------- LOCAL CLEANUP');
                 grunt.log.subhead('--- ' + command);
@@ -237,7 +237,7 @@ module.exports = function(grunt) {
                 updateSymlink,
                 onAfterDeploy,
                 remoteCleanup,
-                localCleanup,
+                deleteZip,
                 closeConnection
             ], function () {
                 done();
