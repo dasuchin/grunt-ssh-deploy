@@ -204,7 +204,7 @@ module.exports = function(grunt) {
             };
 
             var remoteCleanup = function(callback) {
-                if (typeof options.number_of_releases !== 'number') callback();
+                if (typeof options.number_of_releases === 'undefined') callback();
                 if (options.number_of_releases < 1) options.number_of_releases = 1;
 
                 var command = "rm -rf `ls -t " + options.deploy_path + " | awk 'NR>" + options.number_of_releases + "'`";
