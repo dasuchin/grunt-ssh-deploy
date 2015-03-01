@@ -44,7 +44,7 @@ module.exports = function(grunt) {
         var defaults = {
             current_symlink: 'current',
             port: 22,
-            zip_deploy: true
+            zip_deploy: false
         };
 
         var options = extend({}, defaults, grunt.config.get('environments').options,
@@ -207,7 +207,7 @@ module.exports = function(grunt) {
                 if (typeof options.number_of_releases !== 'number') callback();
                 if (options.number_of_releases < 1) options.number_of_releases = 1;
 
-                var command = "rm -rf `ls -t " + options.deploy_path + " | awk 'NR>" + options.number_of_releases + "'`";
+                var command = "rm -rf `ls -r " + options.deploy_path + " | awk 'NR>" + options.number_of_releases + "'`";
                 grunt.log.subhead('--------------- REMOVING OLD BUILDS');
                 grunt.log.subhead('--- ' + command);
                 execRemote(command, options.debug, callback);

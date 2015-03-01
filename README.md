@@ -96,11 +96,11 @@ Commands to run on the server before and after deploy directory is created and s
 #### options.releases_to_keep
 Type: `Number`
 
+The number of builds (including the current build) to keep in the remote releases directory. Must be >= 1.
+
 #### options.zip_deploy
 Type: `Boolean`
-Default value: `true`
-
-The number of builds (including the current build) to keep in the remote releases directory. Must be >= 1.
+Default value: `false`
 
 ### Usage Examples
 
