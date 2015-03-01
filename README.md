@@ -102,6 +102,8 @@ The number of builds (including the current build) to keep in the remote release
 Type: `Boolean`
 Default value: `false`
 
+Compress the build before uploading.
+
 ### Usage Examples
 
 #### Custom Options
