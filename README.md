@@ -1,4 +1,4 @@
-# grunt-ssh-deploy (Version: 0.2.2)
+# grunt-ssh-deploy (Version: 0.2.4)
 
 > SSH Deployment for Grunt using [ssh2](https://github.com/mscdex/ssh2).
 
@@ -93,6 +93,17 @@ Type: `String`
 
 Commands to run on the server before and after deploy directory is created and symlinked. 
 
+#### options.releases_to_keep
+Type: `Number`
+
+The number of builds (including the current build) to keep in the remote releases directory. Must be >= 1.
+
+#### options.zip_deploy
+Type: `Boolean`
+Default value: `false`
+
+Compress the build before uploading.
+
 ### Usage Examples
 
 #### Custom Options
@@ -111,7 +122,8 @@ grunt.initConfig({
               deploy_path: '/full/path',
               local_path: 'dist',
               current_symlink: 'current',
-              debug: true
+              debug: true,
+              number_of_releases: '3'
           }
       },
       production: {
@@ -122,7 +134,8 @@ grunt.initConfig({
               port: '<%= secret.production.port %>',
               deploy_path: '/full/path',
               local_path: 'dist',
-              current_symlink: 'current'
+              current_symlink: 'current',
+              number_of_releases: '5'
           }
       }
   }

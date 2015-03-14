@@ -1,7 +1,7 @@
 {
   "name": "grunt-ssh-deploy",
   "description": "Grunt SSH deployment",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "homepage": "https://github.com/dasuchin/grunt-ssh-deploy",
   "author": {
     "name": "Dustin Carlson",
