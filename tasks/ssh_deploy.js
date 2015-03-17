@@ -44,7 +44,8 @@ module.exports = function(grunt) {
         var defaults = {
             current_symlink: 'current',
             port: 22,
-            zip_deploy: false
+            zip_deploy: false,
+            max_buffer: 200 * 1024
         };
 
         var options = extend({}, defaults, grunt.config.get('environments').options,
@@ -78,7 +79,11 @@ module.exports = function(grunt) {
             var childProcessExec = require('child_process').exec;
 
             var execLocal = function(cmd, next) {
-                childProcessExec(cmd, function(err, stdout, stderr){
+            	var execOptions = {
+            		maxBuffer: options.max_buffer	
+            	};
+            	
+                childProcessExec(cmd, execOptions, function(err, stdout, stderr){
                     grunt.log.debug(cmd);
                     grunt.log.debug('stdout: ' + stdout);
                     grunt.log.debug('stderr: ' + stderr);
