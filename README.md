@@ -104,6 +104,12 @@ Default value: `false`
 
 Compress the build before uploading.
 
+#### options.max_buffer
+Type: `Number`
+Default value: `200 * 1024`
+
+Largest amount of data allowed on stdout or stderr.
+
 ### Usage Examples
 
 #### Custom Options
