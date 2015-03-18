@@ -113,15 +113,17 @@ grunt.initConfig({
   // do not store credentials in the git repo, store them separately and read from a secret file
   secret: grunt.file.readJSON('secret.json'),
   environments: {
+      options: {
+        local_path: 'dist',
+        current_symlink: 'current',
+        deploy_path: '/full/path'
+      }
       staging: {
           options: {
               host: '<%= secret.staging.host %>',
               username: '<%= secret.staging.username %>',
               password: '<%= secret.staging.password %>',
               port: '<%= secret.staging.port %>',
-              deploy_path: '/full/path',
-              local_path: 'dist',
-              current_symlink: 'current',
               debug: true,
               number_of_releases: '3'
           }
@@ -132,9 +134,6 @@ grunt.initConfig({
               username: '<%= secret.production.username %>',
               password: '<%= secret.production.password %>',
               port: '<%= secret.production.port %>',
-              deploy_path: '/full/path',
-              local_path: 'dist',
-              current_symlink: 'current',
               number_of_releases: '5'
           }
       }
@@ -146,14 +145,16 @@ grunt.initConfig({
 ```js
 grunt.initConfig({
   environments: {
-    production: {
-      host: '123.45.67.89',
-      username: 'root',
-      password: 'password',
-      deploy_path: '/sites/great_project',
-      local_path: '.',
-      before_deploy: 'cd /sites/great_project/releases/current && forever stopall',
-      after_deploy: 'cd /sites/great_project/releases/current && npm install && forever start app.js'
+    options: {
+      production: {
+        host: '123.45.67.89',
+        username: 'root',
+        password: 'password',
+        deploy_path: '/sites/great_project',
+        local_path: '.',
+        before_deploy: 'cd /sites/great_project/releases/current && forever stopall',
+        after_deploy: 'cd /sites/great_project/releases/current && npm install && forever start app.js'
+      }
     }
   },
 });
