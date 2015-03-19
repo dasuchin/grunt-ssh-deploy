@@ -121,7 +121,7 @@ module.exports = function(grunt) {
 
             var zipForDeploy = function(callback) {
                 if (!options.zip_deploy) return callback();
-                var command = "tar -czvf ./deploy.tgz --directory=" + options.local_path + " . --exclude=deploy.tgz";
+                var command = "tar -czvf ./deploy.tgz --ignore-failed-read --directory=" + options.local_path + " . --exclude=deploy.tgz";
                 grunt.log.subhead('--------------- ZIPPING FOLDER');
                 grunt.log.subhead('--- ' + command);
                 execLocal(command, callback);
