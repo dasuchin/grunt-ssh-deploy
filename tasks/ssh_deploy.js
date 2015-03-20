@@ -121,7 +121,7 @@ module.exports = function(grunt) {
 
             var zipForDeploy = function(callback) {
                 if (!options.zip_deploy) return callback();
-                var command = "tar -czvf ./deploy.tgz --directory=" + options.local_path + " . --exclude=deploy.tgz";
+                var command = "tar -czvf ./deploy.tgz --ignore-failed-read --directory=" + options.local_path + " . --exclude=deploy.tgz";
                 grunt.log.subhead('--------------- ZIPPING FOLDER');
                 grunt.log.subhead('--- ' + command);
                 execLocal(command, callback);
@@ -209,10 +209,10 @@ module.exports = function(grunt) {
             };
 
             var remoteCleanup = function(callback) {
-                if (typeof options.number_of_releases === 'undefined') return callback();
-                if (options.number_of_releases < 1) options.number_of_releases = 1;
+                if (typeof options.releases_to_keep === 'undefined') return callback();
+                if (options.releases_to_keep < 1) options.releases_to_keep = 1;
 
-                var command = "rm -rf `ls -r " + options.deploy_path + "/releases/ | awk 'NR>" + options.number_of_releases + "'`";
+                var command = "rm -rf `ls -r " + options.deploy_path + "/releases/ | awk 'NR>" + options.releases_to_keep + "'`";
                 grunt.log.subhead('--------------- REMOVING OLD BUILDS');
                 grunt.log.subhead('--- ' + command);
                 execRemote(command, options.debug, callback);
