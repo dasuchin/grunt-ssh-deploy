@@ -170,8 +170,7 @@ module.exports = function(grunt) {
                 if (!options.zip_deploy) return callback();
                 var goToCurrent = "cd " + options.deploy_path + "/releases/" + timestamp;
                 var untar = "tar -xzvf deploy.tgz";
-                var cleanup = "rm " + options.deploy_path + "/releases/" + timestamp + "/deploy.tgz";
-                var command = goToCurrent + " && " + untar + " && " + cleanup;
+                var command = goToCurrent + " && " + untar + " && rm deploy.tgz";
                 grunt.log.subhead('--------------- UNZIP ZIPFILE');
                 grunt.log.subhead('--- ' + command);
                 execRemote(command, options.debug, callback);
