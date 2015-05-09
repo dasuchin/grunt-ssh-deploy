@@ -212,7 +212,7 @@ module.exports = function(grunt) {
                 if (typeof options.releases_to_keep === 'undefined') return callback();
                 if (options.releases_to_keep < 1) options.releases_to_keep = 1;
 
-                var command = "rm -rf `ls -r " + options.deploy_path + "/releases/ | awk 'NR>" + options.releases_to_keep + "'`";
+                var command = "cd " + options.deploy_path + "/releases/ && rm -rfv `ls -r " + options.deploy_path + "/releases/ | awk 'NR>" + options.releases_to_keep + "'`";
                 grunt.log.subhead('--------------- REMOVING OLD BUILDS');
                 grunt.log.subhead('--- ' + command);
                 execRemote(command, options.debug, callback);
