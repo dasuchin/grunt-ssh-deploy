@@ -131,7 +131,7 @@ grunt.initConfig({
               password: '<%= secret.staging.password %>',
               port: '<%= secret.staging.port %>',
               debug: true,
-              number_of_releases: '3'
+              releases_to_keep: '3'
           }
       },
       production: {
@@ -140,7 +140,7 @@ grunt.initConfig({
               username: '<%= secret.production.username %>',
               password: '<%= secret.production.password %>',
               port: '<%= secret.production.port %>',
-              number_of_releases: '5'
+              releases_to_keep: '5'
           }
       }
   }
@@ -152,17 +152,19 @@ grunt.initConfig({
 grunt.initConfig({
   environments: {
     options: {
-      production: {
+      local_path: '.',
+    },
+    production: {
+      options: {
         host: '123.45.67.89',
         username: 'root',
         password: 'password',
         deploy_path: '/sites/great_project',
-        local_path: '.',
         before_deploy: 'cd /sites/great_project/releases/current && forever stopall',
         after_deploy: 'cd /sites/great_project/releases/current && npm install && forever start app.js'
       }
     }
-  },
+  }
 });
 ```
 
