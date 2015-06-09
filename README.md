@@ -61,6 +61,11 @@ Type: `string`
 
 Path to your private key `privateKey: require('fs').readFileSync('/path/to/private/key')`
 
+#### options.passphrase
+Type: `string`
+
+Passphrase of your private key if needed.
+
 #### options.agent
 Type: `string`
 
