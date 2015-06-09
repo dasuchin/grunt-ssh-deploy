@@ -15,12 +15,11 @@ var getScpOptions = function(options) {
         username: options.username
     };
 
-    if (options.passphrase) {
-        scpOptions.passphrase = options.passphrase;
-    }
-
     if (options.privateKey) {
         scpOptions.privateKey = options.privateKey;
+        if (options.passphrase) {
+            scpOptions.passphrase = options.passphrase;
+        }
     }
     else if (options.password) {
         scpOptions.password = options.password;
