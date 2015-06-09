@@ -179,7 +179,7 @@ module.exports = function(grunt) {
 
             var updateSymlink = function(callback) {
                 var delete_symlink = 'rm -rf ' + options.deploy_path + '/' + options.current_symlink;
-                var set_symlink = 'cd ' + options.deploy_path + ' && ln -s releases/' + timestamp + ' ' + options.current_symlink;
+                var set_symlink = 'ln -s ' + options.deploy_path + '/releases/' + timestamp + ' ' + options.deploy_path + '/' + options.current_symlink;
                 var command = delete_symlink + ' && ' + set_symlink;
                 grunt.log.subhead('--------------- UPDATING SYM LINK');
                 grunt.log.subhead('--- ' + command);
