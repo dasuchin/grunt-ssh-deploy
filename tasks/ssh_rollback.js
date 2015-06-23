@@ -76,16 +76,14 @@ module.exports = function(grunt) {
                 var command = delete_symlink + ' && ' + set_symlink;
                 grunt.log.subhead('--------------- UPDATING SYM LINK');
                 grunt.log.subhead('--- ' + command);
-                callback();
-                //execRemote(command, options.debug, callback);
+                execRemote(command, options.debug, callback);
             };
 
             var deleteRelease = function(callback) {
                 var command = 't=`ls -t1 ' + path.join(options.deploy_path, 'releases', options.release_subdir) + ' | sed -n 1p` && rm -rf ' + path.join(options.deploy_path, 'releases', options.release_subdir) + '$t/';
                 grunt.log.subhead('--------------- DELETING RELEASE');
                 grunt.log.subhead('--- ' + command);
-                callback();
-                //execRemote(command, options.debug, callback);
+                execRemote(command, options.debug, callback);
             };
 
             // closing connection to remote server
