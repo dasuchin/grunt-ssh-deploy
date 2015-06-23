@@ -8,14 +8,25 @@
 
 'use strict';
 
+var path = require('path');
+
 module.exports = function(grunt) {
 
 	grunt.registerTask('ssh_rollback', 'Begin Rollback', function() {
 		var done = this.async();
         var Connection = require('ssh2');
         var async = require('async');
+	var extend = require('extend');
 
-        var options = grunt.config.get('environments')[this.args]['options'];
+        var defaults = {
+            current_symlink: 'current',
+            port: 22,
+            max_buffer: 400 * 1024,
+            release_subdir: '/'
+        };
+
+        var options = extend({}, defaults, grunt.config.get('environments').options,
+            grunt.config.get('environments')[this.args]['options']);
 
 		var c = new Connection();
 		c.on('connect', function() {
@@ -60,19 +71,21 @@ module.exports = function(grunt) {
             };
 
             var updateSymlink = function(callback) {
-                var delete_symlink = 'rm -rf ' + options.deploy_path + '/' + options.current_symlink;
-                var set_symlink = 'cd ' + options.deploy_path + ' && t=`ls -t1 releases/ | sed -n 2p` && ln -s releases/$t ' + options.current_symlink;
+                var delete_symlink = 'rm -rf ' + path.join(options.deploy_path, options.current_symlink);
+                var set_symlink = 'cd ' + options.deploy_path + ' && t=`ls -t1 ' + path.join(options.deploy_path, 'releases', options.release_subdir) + ' | sed -n 2p` && ln -s ' + path.join(options.deploy_path, 'releases', options.release_subdir) + '$t ' + options.current_symlink;
                 var command = delete_symlink + ' && ' + set_symlink;
                 grunt.log.subhead('--------------- UPDATING SYM LINK');
                 grunt.log.subhead('--- ' + command);
-                execRemote(command, options.debug, callback);
+                callback();
+                //execRemote(command, options.debug, callback);
             };
 
             var deleteRelease = function(callback) {
-                var command = 't=`ls -t1 ' + options.deploy_path + '/releases/ | sed -n 1p` && rm -rf ' + options.deploy_path + '/releases/$t/';
+                var command = 't=`ls -t1 ' + path.join(options.deploy_path, 'releases', options.release_subdir) + ' | sed -n 1p` && rm -rf ' + path.join(options.deploy_path, 'releases', options.release_subdir) + '$t/';
                 grunt.log.subhead('--------------- DELETING RELEASE');
                 grunt.log.subhead('--- ' + command);
-                execRemote(command, options.debug, callback);
+                callback();
+                //execRemote(command, options.debug, callback);
             };
 
             // closing connection to remote server
