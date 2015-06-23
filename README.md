@@ -153,7 +153,7 @@ grunt.initConfig({
               password: '<%= secret.production.password %>',
               port: '<%= secret.production.port %>',
               releases_to_keep: '5',
-              releases_subdir: 'myapp'
+              release_subdir: 'myapp'
           }
       }
   }
