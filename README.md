@@ -103,7 +103,7 @@ Type: `Number`
 
 The number of builds (including the current build) to keep in the remote releases directory. Must be >= 1.
 
-#### options.releases_subdir
+#### options.release_subdir
 Type: `String`
 Default value: `'/'`
 
