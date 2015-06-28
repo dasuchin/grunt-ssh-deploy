@@ -135,7 +135,7 @@ grunt.initConfig({
         local_path: 'dist',
         current_symlink: 'current',
         deploy_path: '/full/path'
-      }
+      },
       staging: {
           options: {
               host: '<%= secret.staging.host %>',
