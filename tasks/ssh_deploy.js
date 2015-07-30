@@ -44,6 +44,7 @@ module.exports = function(grunt) {
         var moment = require('moment');
         var timestamp = moment().format('YYYYMMDDHHmmssSSS');
         var async = require('async');
+        var childProcessExec = require('child_process').exec;
         var extend = require('extend');
         
         var defaults = {
@@ -84,8 +85,6 @@ module.exports = function(grunt) {
         c.connect(options);
 
         var execCommands = function(options, connection){
-            var childProcessExec = require('child_process').exec;
-
             var execLocal = function(cmd, next) {
             	var execOptions = {
             		maxBuffer: options.max_buffer	
@@ -128,11 +127,24 @@ module.exports = function(grunt) {
             };
 
             var zipForDeploy = function(callback) {
-                if (!options.zip_deploy) return callback();
-                var command = "tar -czvf ./deploy.tgz --ignore-failed-read --directory=" + options.local_path + " . --exclude=deploy.tgz";
-                grunt.log.subhead('--------------- ZIPPING FOLDER');
-                grunt.log.subhead('--- ' + command);
-                execLocal(command, callback);
+              if (!options.zip_deploy) return callback();
+
+              childProcessExec('tar --version', function (error, stdout, stderr) {
+                if (!error) {
+                  var isGnuTar = stdout.match(/GNU tar/);
+                  var command;
+                  if (isGnuTar) {
+                    command = "tar -czvf ./deploy.tgz --ignore-failed-read --directory=" + options.local_path + " . --exclude=deploy.tgz";
+                  } else {
+                    command = "tar -czvf ./deploy.tgz --directory=" + options.local_path + " .";
+                  }
+
+                  grunt.log.subhead('--------------- ZIPPING FOLDER');
+                  grunt.log.subhead('--- ' + command);
+
+                  execLocal(command, callback);
+                }
+              });
             };
 
             var onBeforeDeploy = function(callback){
