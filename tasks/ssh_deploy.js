@@ -57,7 +57,7 @@ module.exports = function(grunt) {
         var options = extend({}, defaults, grunt.config.get('environments').options,
             grunt.config.get('environments')[this.args]['options']);
         
-        var releasePath = path.join(options.deploy_path, 'releases', options.release_subdir, timestamp);
+        var releasePath = path.posix.join(options.deploy_path, 'releases', options.release_subdir, timestamp);
 
         // scp defaults
         client.defaults(getScpOptions(options));
@@ -178,7 +178,7 @@ module.exports = function(grunt) {
                 if (!options.zip_deploy) return callback();
                 var goToCurrent = "cd " + releasePath;
                 var untar = "tar -xzvf deploy.tgz";
-                var cleanup = "rm " + path.join(releasePath, "deploy.tgz");
+                var cleanup = "rm " + path.posix.join(releasePath, "deploy.tgz");
                 var command = goToCurrent + " && " + untar + " && " + cleanup;
                 grunt.log.subhead('--------------- UNZIP ZIPFILE');
                 grunt.log.subhead('--- ' + command);
@@ -186,8 +186,8 @@ module.exports = function(grunt) {
             };
 
             var updateSymlink = function(callback) {
-                var delete_symlink = 'rm -rf ' + path.join(options.deploy_path, options.current_symlink);
-                var set_symlink = 'ln -s ' + releasePath + ' ' + path.join(options.deploy_path, options.current_symlink);
+                var delete_symlink = 'rm -rf ' + path.posix.join(options.deploy_path, options.current_symlink);
+                var set_symlink = 'ln -s ' + releasePath + ' ' + path.posix.join(options.deploy_path, options.current_symlink);
                 var command = delete_symlink + ' && ' + set_symlink;
                 grunt.log.subhead('--------------- UPDATING SYM LINK');
                 grunt.log.subhead('--- ' + command);
@@ -220,7 +220,7 @@ module.exports = function(grunt) {
                 if (typeof options.releases_to_keep === 'undefined') return callback();
                 if (options.releases_to_keep < 1) options.releases_to_keep = 1;
 
-                var command = "cd " + path.join(options.deploy_path, 'releases', options.release_subdir) + " && rm -rfv `ls -r " + path.join(options.deploy_path, 'releases', options.release_subdir) + " | awk 'NR>" + options.releases_to_keep + "'`";
+                var command = "cd " + path.posix.join(options.deploy_path, 'releases', options.release_subdir) + " && rm -rfv `ls -r " + path.posix.join(options.deploy_path, 'releases', options.release_subdir) + " | awk 'NR>" + options.releases_to_keep + "'`";
                 grunt.log.subhead('--------------- REMOVING OLD BUILDS');
                 grunt.log.subhead('--- ' + command);
                 execRemote(command, options.debug, callback);
