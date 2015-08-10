@@ -22,6 +22,7 @@ module.exports = function(grunt) {
             current_symlink: 'current',
             port: 22,
             max_buffer: 400 * 1024,
+            release_root: 'releases',
             release_subdir: '/'
         };
 
@@ -72,7 +73,7 @@ module.exports = function(grunt) {
 
             var updateSymlink = function(callback) {
                 var delete_symlink = 'rm -rf ' + path.posix.join(options.deploy_path, options.current_symlink);
-                var set_symlink = 'cd ' + options.deploy_path + ' && t=`ls -t1 ' + path.posix.join(options.deploy_path, 'releases', options.release_subdir) + ' | sed -n 2p` && ln -s ' + path.posix.join(options.deploy_path, 'releases', options.release_subdir) + '$t ' + options.current_symlink;
+                var set_symlink = 'cd ' + options.deploy_path + ' && t=`ls -t1 ' + path.posix.join(options.deploy_path, options.release_root, options.release_subdir) + ' | sed -n 2p` && ln -s ' + path.posix.join(options.deploy_path, options.release_root, options.release_subdir) + '$t ' + options.current_symlink;
                 var command = delete_symlink + ' && ' + set_symlink;
                 grunt.log.subhead('--------------- UPDATING SYM LINK');
                 grunt.log.subhead('--- ' + command);
@@ -80,7 +81,7 @@ module.exports = function(grunt) {
             };
 
             var deleteRelease = function(callback) {
-                var command = 't=`ls -t1 ' + path.posix.join(options.deploy_path, 'releases', options.release_subdir) + ' | sed -n 1p` && rm -rf ' + path.posix.join(options.deploy_path, 'releases', options.release_subdir) + '$t/';
+                var command = 't=`ls -t1 ' + path.posix.join(options.deploy_path, options.release_root, options.release_subdir) + ' | sed -n 1p` && rm -rf ' + path.posix.join(options.deploy_path, options.release_root, options.release_subdir) + '$t/';
                 grunt.log.subhead('--------------- DELETING RELEASE');
                 grunt.log.subhead('--- ' + command);
                 execRemote(command, options.debug, callback);
