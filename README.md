@@ -98,6 +98,16 @@ Type: `String`
 
 Commands to run on the server before and after deploy directory is created and symlinked. 
 
+#### options.tag
+Type: `String|function`
+Default value: the current date (as a timestamp)
+
+The release tag, e.g. '1.2.3'. It can be a string or a function (in that case is called and the returned value will be
+used). It defaults to the current timestamp formatted as 'YYYYMMDDHHmmssSSS'.
+
+*WARN*: release tag name **matters**. When used with parameter `releases_to_keep` the releases are reverse sorted
+alphabetically and older ones are removed. So be careful when you set your release tag name.
+
 #### options.releases_to_keep
 Type: `Number`
 
@@ -109,6 +119,13 @@ Default value: `'/'`
 
 Name of the sub directory to store the release in. Useful when multiple projects get deployed
 to the same machine and the `releases_to_keep` option is being used.
+
+#### options.release_root
+Type: `String`
+Default value: `'releases'`
+
+Name of the root directory where all the releases are published. If a `options.release_subdir` is also provided then
+the latest will be appended after this path.
 
 #### options.zip_deploy
 Type: `Boolean`

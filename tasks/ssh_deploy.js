@@ -52,13 +52,21 @@ module.exports = function(grunt) {
             port: 22,
             zip_deploy: false,
             max_buffer: 200 * 1024,
-            release_subdir: '/'
+            release_subdir: '/',
+            release_root: 'releases',
+            tag: timestamp
         };
 
         var options = extend({}, defaults, grunt.config.get('environments').options,
             grunt.config.get('environments')[this.args]['options']);
-        
-        var releasePath = path.posix.join(options.deploy_path, 'releases', options.release_subdir, timestamp);
+
+        var releaseTag = typeof options.tag == 'function' ? options.tag() : options.tag;
+        // Just a security check, avoiding empty tags that could mess up the file system
+        if (releaseTag == '') {
+            releaseTag = defaults.tag;
+        }
+
+        var releasePath = path.posix.join(options.deploy_path, options.release_root, options.release_subdir, releaseTag);
 
         // scp defaults
         client.defaults(getScpOptions(options));
@@ -232,7 +240,7 @@ module.exports = function(grunt) {
                 if (typeof options.releases_to_keep === 'undefined') return callback();
                 if (options.releases_to_keep < 1) options.releases_to_keep = 1;
 
-                var command = "cd " + path.posix.join(options.deploy_path, 'releases', options.release_subdir) + " && rm -rfv `ls -r " + path.posix.join(options.deploy_path, 'releases', options.release_subdir) + " | awk 'NR>" + options.releases_to_keep + "'`";
+                var command = "cd " + path.posix.join(options.deploy_path, options.release_root, options.release_subdir) + " && rm -rfv `ls -r " + path.posix.join(options.deploy_path, options.release_root, options.release_subdir) + " | awk 'NR>" + options.releases_to_keep + "'`";
                 grunt.log.subhead('--------------- REMOVING OLD BUILDS');
                 grunt.log.subhead('--- ' + command);
                 execRemote(command, options.debug, callback);
