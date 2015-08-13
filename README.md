@@ -1,4 +1,4 @@
-# grunt-ssh-deploy (Version: 0.3.0)
+# grunt-ssh-deploy (Version: 0.3.1)
 
 > SSH Deployment for Grunt using [ssh2](https://github.com/mscdex/ssh2).
 
