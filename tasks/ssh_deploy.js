@@ -258,6 +258,10 @@ module.exports = function(grunt) {
             var closeConnection = function(callback) {
                 connection.end();
 
+                client.close();
+                client.__sftp = null;
+                client.__ssh = null;
+
                 callback();
             };
 
