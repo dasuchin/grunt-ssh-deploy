@@ -141,17 +141,18 @@ module.exports = function(grunt) {
               childProcessExec('tar --version', function (error, stdout, stderr) {
                 if (!error) {
                   var isGnuTar = stdout.match(/GNU tar/);
-                  var command;
-                  if (isGnuTar) {
-                    command = "tar -czvf ./deploy.tgz --ignore-failed-read --directory=" + options.local_path + " . --exclude=deploy.tgz";
-                  } else {
-                    command = "tar -czvf ./deploy.tgz --directory=" + options.local_path + " .";
-                  }
-
+                  var command = "tar -czvf ./deploy.tgz";
+                  
                   if(options.exclude.length) {
                     options.exclude.forEach(function(exclusion) {
                       command += ' --exclude=' + exclusion;
                     });
+                  }
+
+                  if (isGnuTar) {
+                    command += " --exclude=deploy.tgz --ignore-failed-read --directory=" + options.local_path + " .";
+                  } else {
+                    command += " --directory=" + options.local_path + " .";
                   }
 
                   grunt.log.subhead('--------------- ZIPPING FOLDER');
