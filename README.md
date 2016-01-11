@@ -139,6 +139,12 @@ Default value: `200 * 1024`
 
 Largest amount of data allowed on stdout or stderr.
 
+#### options.exclude
+Type: `Array`
+Default value: `[]`
+
+List of folders or files to exclude from build.
+
 ### Usage Examples
 
 #### Custom Options
