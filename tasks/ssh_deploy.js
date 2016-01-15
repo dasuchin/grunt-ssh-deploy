@@ -54,7 +54,8 @@ module.exports = function(grunt) {
             max_buffer: 200 * 1024,
             release_subdir: '/',
             release_root: 'releases',
-            tag: timestamp
+            tag: timestamp,
+            exclude: []
         };
 
         var options = extend({}, defaults, grunt.config.get('environments').options,
@@ -140,11 +141,18 @@ module.exports = function(grunt) {
               childProcessExec('tar --version', function (error, stdout, stderr) {
                 if (!error) {
                   var isGnuTar = stdout.match(/GNU tar/);
-                  var command;
+                  var command = "tar -czvf ./deploy.tgz";
+                  
+                  if(options.exclude.length) {
+                    options.exclude.forEach(function(exclusion) {
+                      command += ' --exclude=' + exclusion;
+                    });
+                  }
+
                   if (isGnuTar) {
-                    command = "tar -czvf ./deploy.tgz --ignore-failed-read --directory=" + options.local_path + " . --exclude=deploy.tgz";
+                    command += " --exclude=deploy.tgz --ignore-failed-read --directory=" + options.local_path + " .";
                   } else {
-                    command = "tar -czvf ./deploy.tgz --directory=" + options.local_path + " .";
+                    command += " --directory=" + options.local_path + " .";
                   }
 
                   grunt.log.subhead('--------------- ZIPPING FOLDER');
