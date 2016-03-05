@@ -15,7 +15,7 @@ var getScpOptions = function(options) {
         port: options.port,
         host: options.host,
         username: options.username,
-		readyTimeout: options.readyTimeout
+        readyTimeout: options.readyTimeout
     };
 
     if (options.privateKey) {
@@ -53,7 +53,7 @@ module.exports = function(grunt) {
             port: 22,
             zip_deploy: false,
             max_buffer: 200 * 1024,
-			readyTimeout: 20000,
+            readyTimeout: 20000,
             release_subdir: '/',
             release_root: 'releases',
             tag: timestamp,
