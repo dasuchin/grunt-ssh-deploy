@@ -1,4 +1,4 @@
-# grunt-ssh-deploy (Version: 0.4.0)
+# grunt-ssh-deploy (Version: 0.4.1)
 
 > SSH Deployment for Grunt using [ssh2](https://github.com/mscdex/ssh2).
 
@@ -76,6 +76,12 @@ Type: `String`
 Default value: `'22'`
 
 Port to connect to on the remote server.
+
+#### options.readyTimeout
+Type: `Number`
+Default value: `20000`
+
+Default timeout (in milliseconds) to wait for the SSH handshake to complete.
 
 #### options.deploy_path
 Type: `String`
