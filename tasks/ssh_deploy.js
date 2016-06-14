@@ -47,7 +47,10 @@ module.exports = function(grunt) {
         var async = require('async');
         var childProcessExec = require('child_process').exec;
         var extend = require('extend');
-        
+
+        var deployFileBase = "deploy.tgz";
+        var deployFile = timestamp+'-'+deployFileBase;
+
         var defaults = {
             current_symlink: 'current',
             port: 22,
@@ -143,7 +146,7 @@ module.exports = function(grunt) {
               childProcessExec('tar --version', function (error, stdout, stderr) {
                 if (!error) {
                   var isGnuTar = stdout.match(/GNU tar/);
-                  var command = "tar -czvf ./deploy.tgz";
+                  var command = "tar -czvf ./"+deployFile;
                   
                   if(options.exclude.length) {
                     options.exclude.forEach(function(exclusion) {
@@ -152,7 +155,8 @@ module.exports = function(grunt) {
                   }
 
                   if (isGnuTar) {
-                    command += " --exclude=deploy.tgz --ignore-failed-read --directory=" + options.local_path + " .";
+                    /* exclude all potential deployment tgz files*/
+                    command += " --exclude=*"+deployFileBase+"  --ignore-failed-read --directory=" + options.local_path + " .";
                   } else {
                     command += " --directory=" + options.local_path + " .";
                   }
@@ -188,7 +192,7 @@ module.exports = function(grunt) {
             };
 
             var scpBuild = function(callback) {
-                var build = (options.zip_deploy) ? 'deploy.tgz' : options.local_path;
+                var build = (options.zip_deploy) ? deployFile : options.local_path;
                 grunt.log.subhead('--------------- UPLOADING NEW BUILD');
                 grunt.log.debug('SCP FROM LOCAL: ' + build
                     + '\n TO REMOTE: ' + releasePath);
@@ -207,8 +211,8 @@ module.exports = function(grunt) {
             var unzipOnRemote = function(callback) {
                 if (!options.zip_deploy) return callback();
                 var goToCurrent = "cd " + releasePath;
-                var untar = "tar -xzvf deploy.tgz";
-                var cleanup = "rm " + path.posix.join(releasePath, "deploy.tgz");
+                var untar = "tar -xzvf " + deployFile;
+                var cleanup = "rm " + path.posix.join(releasePath, deployFile);
                 var command = goToCurrent + " && " + untar + " && " + cleanup;
                 grunt.log.subhead('--------------- UNZIP ZIPFILE');
                 grunt.log.subhead('--- ' + command);
@@ -258,7 +262,7 @@ module.exports = function(grunt) {
 
             var deleteZip = function(callback) {
                 if (!options.zip_deploy) return callback();
-                var command = 'rm deploy.tgz';
+                var command = 'rm ' + deployFile;
                 grunt.log.subhead('--------------- LOCAL CLEANUP');
                 grunt.log.subhead('--- ' + command);
                 execLocal(command, callback);
